@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A15E65316A5D24D00DCE23B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A15E65216A5D24D00DCE23B /* main.cpp */; };
 		0A15E65516A5D24D00DCE23B /* Cole_Research.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0A15E65416A5D24D00DCE23B /* Cole_Research.1 */; };
+		0A15E65E16A5D2C500DCE23B /* multi_elliptical_orbit_tracking_complicated_fit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A15E65D16A5D27200DCE23B /* multi_elliptical_orbit_tracking_complicated_fit.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,8 +26,12 @@
 
 /* Begin PBXFileReference section */
 		0A15E64E16A5D24D00DCE23B /* Cole Research */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Cole Research"; sourceTree = BUILT_PRODUCTS_DIR; };
-		0A15E65216A5D24D00DCE23B /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		0A15E65416A5D24D00DCE23B /* Cole_Research.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Cole_Research.1; sourceTree = "<group>"; };
+		0A15E65B16A5D27200DCE23B /* nrutil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nrutil.h; sourceTree = "<group>"; };
+		0A15E65C16A5D27200DCE23B /* nr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nr.h; sourceTree = "<group>"; };
+		0A15E65D16A5D27200DCE23B /* multi_elliptical_orbit_tracking_complicated_fit.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = multi_elliptical_orbit_tracking_complicated_fit.cpp; sourceTree = "<group>"; };
+		0A15E66016A5D4F900DCE23B /* Elliptical_Orbits_Notes.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Elliptical_Orbits_Notes.rtf; sourceTree = "<group>"; };
+		0A63EA1716ADC5E7006A074A /* python_orbits_graphs.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = python_orbits_graphs.py; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +48,8 @@
 		0A15E64316A5D24D00DCE23B = {
 			isa = PBXGroup;
 			children = (
+				0A63EA1716ADC5E7006A074A /* python_orbits_graphs.py */,
+				0A15E66016A5D4F900DCE23B /* Elliptical_Orbits_Notes.rtf */,
 				0A15E65116A5D24D00DCE23B /* Cole Research */,
 				0A15E64F16A5D24D00DCE23B /* Products */,
 			);
@@ -60,13 +66,31 @@
 		0A15E65116A5D24D00DCE23B /* Cole Research */ = {
 			isa = PBXGroup;
 			children = (
-				0A15E65216A5D24D00DCE23B /* main.cpp */,
+				0A15E65B16A5D27200DCE23B /* nrutil.h */,
+				0A15E65C16A5D27200DCE23B /* nr.h */,
+				0A15E65D16A5D27200DCE23B /* multi_elliptical_orbit_tracking_complicated_fit.cpp */,
 				0A15E65416A5D24D00DCE23B /* Cole_Research.1 */,
 			);
 			path = "Cole Research";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		0A63EA1C16ADC687006A074A /* Cole_Research_Python_Elements */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 0A63EA1D16ADC687006A074A /* Build configuration list for PBXLegacyTarget "Cole_Research_Python_Elements" */;
+			buildPhases = (
+			);
+			buildToolPath = /System/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7;
+			dependencies = (
+			);
+			name = Cole_Research_Python_Elements;
+			passBuildSettingsInEnvironment = 1;
+			productName = Cole_Research_Python_Elements;
+		};
+/* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
 		0A15E64D16A5D24D00DCE23B /* Cole Research */ = {
@@ -108,6 +132,7 @@
 			projectRoot = "";
 			targets = (
 				0A15E64D16A5D24D00DCE23B /* Cole Research */,
+				0A63EA1C16ADC687006A074A /* Cole_Research_Python_Elements */,
 			);
 		};
 /* End PBXProject section */
@@ -117,7 +142,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A15E65316A5D24D00DCE23B /* main.cpp in Sources */,
+				0A15E65E16A5D2C500DCE23B /* multi_elliptical_orbit_tracking_complicated_fit.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,6 +216,27 @@
 			};
 			name = Release;
 		};
+		0A63EA1E16ADC687006A074A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEBUGGING_SYMBOLS = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		0A63EA1F16ADC687006A074A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -210,6 +256,16 @@
 				0A15E65A16A5D24D00DCE23B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0A63EA1D16ADC687006A074A /* Build configuration list for PBXLegacyTarget "Cole_Research_Python_Elements" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A63EA1E16ADC687006A074A /* Debug */,
+				0A63EA1F16ADC687006A074A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
