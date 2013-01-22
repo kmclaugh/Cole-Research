@@ -6,6 +6,10 @@ import mpl_toolkits.mplot3d.axes3d
 import datetime
 import os
 
+current_directory = os.getcwd()
+plots_directory = current_directory+"/Plots"
+current_data_directory = current_directory+"/Current_Data"
+
 ## Convets a file with lines formated as "xvalue, yvalue\n" to a list of x_values and a list of y_values. Returns the tuple (x_values,y_values)
 def comma_seperated_file_to_xy_list(filename):
     x_vals = []
@@ -45,7 +49,7 @@ def comma_seperated_file_to_graph(filename,the_xlabel="x",the_ylabel="y",the_zla
         xlabel(the_xlabel)
         title(the_title)
         todays_date = datetime.datetime.now()
-        savefig("/Users/kevin/Desktop/School/Spring 2013/Cole Research/Plots/{}-{}.pdf".format(the_title,current_date_and_time), bbox_inches=0)
+        savefig(plots_directory+"/{}-{}.pdf".format(the_title,current_date_and_time), bbox_inches=0)
     if len(values) == 3:
         print("more than 3 values doesn't work yet")
 #        fig=figure()
@@ -56,21 +60,22 @@ def comma_seperated_file_to_graph(filename,the_xlabel="x",the_ylabel="y",the_zla
 #        ax.set_zlabel('Z')
 #        show()
 
+## Note that you must move the .dat files created by the multi_elliptical file to the /Current_Data directory after running multi_elliptical simulation. This is to prevent accencidental overwrite of .dat files as they take a long time to generate and the multi_elliptical will automatically overwrite previous files.
 
-### Eccentricity
-eccentricity_filename = "/Users/kevin/Desktop/School/Spring 2013/Cole Research/eccen.dat"
+## Eccentricity
+eccentricity_filename = current_data_directory+"/eccen.dat"
 comma_seperated_file_to_graph(eccentricity_filename,the_xlabel="x",the_ylabel="eccentricity",the_title="Eccentricity")
 
-### Semimajor
-#semimajor_filename = "/Users/kevin/Desktop/School/Spring 2013/Cole Research/smajor.dat"
-#comma_seperated_file_to_graph(semimajor_filename,the_xlabel="x",the_ylabel="semimajor axis",the_title="Semimajor Axis")
-#
-### Theta0
-#theta0_filename = "/Users/kevin/Desktop/School/Spring 2013/Cole Research/theta0.dat"
-#comma_seperated_file_to_graph(theta0_filename,the_xlabel="x",the_ylabel="theta0",the_title="Theta0")
+## Semimajor
+semimajor_filename = current_data_directory+"/smajor.dat"
+comma_seperated_file_to_graph(semimajor_filename,the_xlabel="x",the_ylabel="semimajor axis",the_title="Semimajor Axis")
+
+## Theta0
+theta0_filename = current_data_directory+"/theta0.dat"
+comma_seperated_file_to_graph(theta0_filename,the_xlabel="x",the_ylabel="theta0",the_title="Theta0")
 
 ## Orbit
-#orbit_filename = "/Users/kevin/Desktop/School/Spring 2013/Cole Research/orbit.dat"
+#orbit_filename = current_data_directory+"/orbit.dat"
 #comma_seperated_file_to_graph(orbit_filename,the_title="orbit")
 
 

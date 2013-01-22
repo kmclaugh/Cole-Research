@@ -312,6 +312,7 @@ theta0_old=0.0;
     frequency30=sqrt( k/ (m*pow(sm30,3)) );
     frequency31=sqrt( k/ (m*pow(sm31,3)) );
 
+    
 	if (Cmass==1)
 	{
 		Py=sqrt(m*k/radius)*sqrt(      sqrt(  1+pow( k/(2*LC*LC*m*radius) , 2)   ) - k/(2*LC*LC*m*radius)  );
@@ -857,23 +858,23 @@ theta0_old=0.0;
 
   {
 	FILE *ofp1,*ofp2,*ofp3,*ofp4,*ofp5,*ofp6,*ofp7,*ofp8,*ofp9,*ofp10,*ofp11,*ofp12,*ofp13,*ofp14,*ofp15,*ofp16;
-	  
-	  //ofp1=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/radius.dat","w");
-	  ofp2=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/orbit.dat","w");
-	  ofp3=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/smajor.dat","w");
-	  //ofp4=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/sminor.dat","w");
-	  ofp5=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/eccen.dat","w");
-	  // ofp6=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/pvalue.dat","w");	  
-	  ofp7=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/theta0.dat","w");
-	  //ofp8=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/energy.dat","w");
-	  //ofp9=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/Lz.dat","w");
-	  //ofp10=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/period.dat","w");
-	  //ofp11=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/Net-angfreq.dat","w");
-      //ofp12=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/Instantaneous-angfreq.dat","w");
-      //ofp13=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/Approximate-Lz.dat","w");
-      //ofp14=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/Approximate-angfreq.dat","w");
-	  //ofp15=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/Approximate-energy.dat","w");
-	  //ofp16=fopen("/Users/kevin/Desktop/School/Spring 2013/Cole Research/Fv.dat","w");
+      
+	  //ofp1=fopen("..//radius.dat","w");
+	  ofp2=fopen("..//orbit.dat","w");
+	  ofp3=fopen("..//smajor.dat","w");
+	  //ofp4=fopen("..//sminor.dat","w");
+	  ofp5=fopen("..//eccen.dat","w");
+	  // ofp6=fopen("..//pvalue.dat","w");	  
+	  ofp7=fopen("..//theta0.dat","w");
+	  //ofp8=fopen("..//energy.dat","w");
+	  //ofp9=fopen("..//Lz.dat","w");
+	  //ofp10=fopen("..//period.dat","w");
+	  //ofp11=fopen("..//Net-angfreq.dat","w");
+      //ofp12=fopen("..//Instantaneous-angfreq.dat","w");
+      //ofp13=fopen("..//Approximate-Lz.dat","w");
+      //ofp14=fopen("..//Approximate-angfreq.dat","w");
+	  //ofp15=fopen("..//Approximate-energy.dat","w");
+	  //ofp16=fopen("..//Fv.dat","w");
 
 	  //int nstp;
 	  int i,k,j=0,count=0, count1=1;

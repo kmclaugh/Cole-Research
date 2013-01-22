@@ -6,8 +6,9 @@
 
 \f0\fs24 \cf0 This is the notes file associated with the elliptical orbits project. I will note all the changes I make to the code and the date of those changes. At the end of each date I note a list of links used to resolve issues.\
 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
 
-\b 1/15/13:
+\b \cf0 1/15/13:
 \b0 \
 Imported files into Xcode as a command line C++ project.\
 Changed void main\{\} to int main\{\} \
@@ -20,14 +21,26 @@ links:\
 \
 
 \b 1/21/13:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
 
-\b0 Found issue with where the files were printing. In Mac the file locations are not automatically relative as in PC. So the filenames have to have the files explicitly stated in the filename ie 
+\b0 \cf0 Found issue with where the files were printing. In Mac the file locations are not automatically relative as in PC. So the filenames have to have the files explicitly stated in the filename ie 
 \f1\fs22 \cf2 \CocoaLigature0 "/Users/kevin/Desktop/School/Spring 2013/Cole Research/orbit.dat"\cf0 ,\cf2 "w" 
 \f0\fs24 \cf0 \CocoaLigature1 I've added them explicitly here however I'm trying to find a way to make them automatic. I tried getcwd() as per link one but as link one also suggests this does gets whatever the directory the executable is running in not where the .cpp file is. I'm going to try a python integrated way of getting it next. I also tried the second link before trying python\
 \
-{\field{\*\fldinst{HYPERLINK "http://www.mail-archive.com/xerces-c-dev@xml.apache.org/msg15355.html"}}{\fldrslt http://www.mail-archive.com/xerces-c-dev@xml.apache.org/msg15355.html}} \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+{\field{\*\fldinst{HYPERLINK "http://www.mail-archive.com/xerces-c-dev@xml.apache.org/msg15355.html"}}{\fldrslt \cf0 http://www.mail-archive.com/xerces-c-dev@xml.apache.org/msg15355.html}} \
 {\field{\*\fldinst{HYPERLINK "http://forums.applenova.com/showthread.php?t=23631"}}{\fldrslt http://forums.applenova.com/showthread.php?t=23631}}\
 \
 changed the print statements to include commas for more accurate python reading\
 What are lines 1026 1040?\
+\
+
+\b 1/22/13:
+\b0 \
+Changed the file paths in the C++ code to relative file paths as per link 1.\
+Changed the file path in Python code so it looks for the .dat files in .../Current_Data.\
+User only need change the "use custom working directory" to the project's directory in the options tab of the schemes for the file paths to work on any Mac machine.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+{\field{\*\fldinst{HYPERLINK "http://www.gidforums.com/t-19393.html"}}{\fldrslt \cf0 http://www.gidforums.com/t-19393.html}}\
 }
