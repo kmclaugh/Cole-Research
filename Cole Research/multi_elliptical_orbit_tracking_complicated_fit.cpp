@@ -9,6 +9,7 @@
 /*************************************************************************/
 
 
+
 #include <iostream>
 #include <string>
 #include <stdio.h>
@@ -26,6 +27,7 @@
 #define e 4.80298e-10
 #define EPS 0.0000005
 #define N 6
+
 #define NUSE 7
 #define IMAXX 11
 #define SHRINK 0.95
@@ -96,6 +98,9 @@ double duration, T;
 double eps,epsilon;
 double epsilonp;			//epsilon*P = smajor*(1-epsilon^2)
 double asint,acost,sintheta0,costheta0,theta0temp;
+double forces_x_array[3];
+double forces_y_array[3];
+double velocities_array[3];
 
 int main ()
 {
@@ -190,11 +195,11 @@ int main ()
  *          Etc.  (Yes, very clever notation indeed.)
  **************************************************************************************************************************************************/
 
-CounterPrint = 6;          //Counter for # points before printing for radius
+CounterPrint = 1;          //Counter for # points before printing for radius
 Cmass = 0;                 //Leave as 0 (nonrelativistic) for now.  Later will check to make sure 1 (relativistic) works.
 Crad = 1;                  //Radiation reaction.  1 to include.  0 not to include.  Default: 1
 Cplane = 1;		 	       //Use of plane waves.  1 for plane waves.  0 for no plane waves.  Default: 1
-eps = exp((double)-23);	   //Controls the numerical precision.
+eps = exp((double)-26);	   //Controls the numerical precision.
 
 duration=1e-9;             //How long, in seconds for the electron, for the simulation to run.  Thus, 1e-12 would mean
                            //the simulation will last for 1e-12 sec in terms of the electron's trajectory.  
@@ -206,9 +211,9 @@ duration=1e-9;             //How long, in seconds for the electron, for the simu
  ***************************************************************************************************************************************************/
  
 epsilon=0.0;	 // dimensionless, 0<=epsilon<1 , initial eccentricity of orbit		  
-smajor=((0.25e-8)* pow(2.0,2.0/3.0)) + 0.03e-8;  //(0.25e-8)*pow(2,2/3);  //(cm)
+smajor=0.7e-8; //     ((0.3e-8)* pow(3.0,2.0/3.0)) + 0.03e-8;  //(0.25e-8)*pow(5.0,2/3);  //(cm) //Adjust catch-orbit here
 
-A1=2000.0;       // (statvolt/cm)  This is the amplitude of the Ex vector of the first plane wave.
+A1=35000.0;       // (statvolt/cm)  This is the amplitude of the Ex vector of the first plane wave.
 A2=0.0; A3=0.0; A4=0.0; A5=0.0;  A6=0.0;
 A7=0.0; A8=0.0; A9=0.0; A10=0.0; A11=0.0;
 A12=0.0; A13=0.0; A14=0.0; A15=0.0; A16=0.0,
@@ -217,7 +222,7 @@ A17=0.0; A18=0.0; A19=0.0; A20=0.0; A21=0.0;
 A22=0.0; A23=0.0; A24=0.0; A25=0.0; A26=0.0;
 A27=0.0; A28=0.0; A29=0.0; A30=0.0; A31=0.0; 
 
-sm1=0.25e-8;     // (cm) (but used to compute angular frequency of wave via:  frequency1=sqrt( k/ (m*pow(sm1,3)) )  
+sm1=0.3e-8;     // (cm) (but used to compute angular frequency of wave via:  frequency1=sqrt( k/ (m*pow(sm1,3)) )  
 
 sm2=0.25e-8; sm3=0.24804e-8; sm4=0.24818e-8; sm5=0.24832e-8;  sm6=0.24846e-8; 
 sm7=0.24860e-8; sm8=0.24874e-8; sm9=0.24888e-8; sm10=0.24902e-8; sm11=0.24916e-8; 
@@ -351,7 +356,7 @@ theta0_old=0.0;
  * In this code, the electron starts at x=radius=a(1+epsilon), y=0, and it moves upward (vx=0, vy=Py/m) at such a speed as to make it
  * travel in an elliptical orbit with eccentricity epsilon, if no other forces except the Coulombic one was to act.
  *************************************************************************************************************************************/
-
+    //initial values for the y[]
 	ystart[1]=0;   //vstart[1]=	(k*m/r)^0.5;	initial momentum in x;
 	ystart[2]=Py;	//initial momentum in y;
 	ystart[3]=0;	//initial momentum in z;
@@ -566,7 +571,7 @@ theta0_old=0.0;
 			Ey= amplitude1*
 				 ( - cos(y[6]*frequency1/LC+frequency1*x+phase1)
 				   - (y[3]/(LC*m))*cos(y[6]*frequency1/LC+frequency1*x+phase1) ) ;
-//*******************************************************************************************/
+/*******************************************************************************************/
 		     FLorx = (-e)*(  amplitude1 *(1+(y[3]/(LC*m)))*(cos(y[6]*frequency1 /LC+frequency1*x-PI/2+phase1) )
 			               + amplitude2 *(1+(y[3]/(LC*m)))*(cos(y[6]*frequency2 /LC+frequency2*x-PI/2+phase2) )
 			               + amplitude3 *(1+(y[3]/(LC*m)))*(cos(y[6]*frequency3 /LC+frequency3*x-PI/2+phase3) )
@@ -639,15 +644,51 @@ theta0_old=0.0;
 	  Radiationz=(2.0/3)*(k*k)/(m*LC*LC*LC)*( y[3]/m/r3 -3*y[6]*(y[4]*y[1]/m+y[5]*y[2]/m+y[6]*y[3]/m )/r5  );
 	  
 	  if (Cmass==0)
-	  {		  	  
- 		  dydx[1]= -k* y[4]/r3 - Crad * Radiationx + Cplane*FLorx;
-		  dydx[2]= -k* y[5]/r3 - Crad * Radiationy + Cplane*FLory;
-		  dydx[3]= -k* y[6]/r3 - Crad * Radiationz ; 
+	  {
+          //forces in x direction
+          double columbic_fx = -k* y[4]/r3;
+          double radiation_fx = -Crad * Radiationx;
+          double applied_plane_wave_fx = Cplane*FLorx;
+          forces_x_array[0] = columbic_fx;
+          forces_x_array[1] = radiation_fx;
+          forces_x_array[2] = applied_plane_wave_fx;
+          
+          
+          //forces in y direction
+          double columbic_fy = -k* y[5]/r3;
+          double radiation_fy = -Crad * Radiationy;
+          double applied_plane_wave_fy = Cplane*FLory;
+          forces_y_array[0] = columbic_fy;
+          forces_y_array[1] = radiation_fy;
+          forces_y_array[2] = applied_plane_wave_fy;
+          
+          //forces in z direction
+          double columbic_fz = -k* y[6]/r3;
+          double radiation_fz = -Crad * Radiationz;
+          
+          
+          //sum forces into derivative vector dydx
+          dydx[1]= columbic_fx + radiation_fx + applied_plane_wave_fx;
+		  dydx[2]= columbic_fy + radiation_fy + applied_plane_wave_fy;
+		  dydx[3]= columbic_fz + radiation_fz;
 
-		  
-		  dydx[4]= y[1]/m;
-		  dydx[5]= y[2]/m;
-		  dydx[6]= y[3]/m;
+          //older code
+// 		  dydx[1]= -k* y[4]/r3 - Crad * Radiationx + Cplane*FLorx;
+//		  dydx[2]= -k* y[5]/r3 - Crad * Radiationy + Cplane*FLory;
+//		  dydx[3]= -k* y[6]/r3 - Crad * Radiationz ; 
+
+		  //calculate the velocities of the eletron from the momentum stored in the y[] vector
+		  double velocity_x = y[1]/m;
+		  double velocity_y = y[2]/m;
+		  double velocity_z = y[3]/m;
+          velocities_array[0] = velocity_x;
+          velocities_array[1] = velocity_y;
+          velocities_array[2] = velocity_z;
+          //get over here
+          
+          dydx[4]= velocity_x;
+		  dydx[5]= velocity_y;
+		  dydx[6]= velocity_z;
 	  }
 	  
 	  if (Cmass==1)
@@ -857,7 +898,7 @@ theta0_old=0.0;
    routine to be used. */
 
   {
-	FILE *ofp1,*ofp2,*ofp3,*ofp4,*ofp5,*ofp6,*ofp7,*ofp8,*ofp9,*ofp10,*ofp11,*ofp12,*ofp13,*ofp14,*ofp15,*ofp16;
+	FILE *ofp1,*ofp2,*ofp3,*ofp4,*ofp5,*ofp6,*ofp7,*ofp8,*ofp9,*ofp10,*ofp11,*ofp12,*ofp13,*ofp14,*ofp15,*ofp16,*ofp17,*ofp18;
       
 	  //ofp1=fopen("..//radius.dat","w");
 	  ofp2=fopen("..//orbit.dat","w");
@@ -875,9 +916,12 @@ theta0_old=0.0;
       //ofp14=fopen("..//Approximate-angfreq.dat","w");
 	  //ofp15=fopen("..//Approximate-energy.dat","w");
 	  //ofp16=fopen("..//Fv.dat","w");
+      ofp17=fopen("..//Forces_x.dat","w");
+      ofp18=fopen("..//Forces_y.dat","w");
 
 	  //int nstp;
 	  int i,k,j=0,count=0, count1=1;
+      long counter=1;
 	  double temp=0.0;
 	  double xsav,x,hnext,hdid,h;
 	  double *yscal,*y,*dydx;
@@ -995,7 +1039,7 @@ theta0_old=0.0;
 
 				  // The approximate value of energy should be:  energy=-(4.80298e-10)*(4.80298e-10)/(2*semimajor);
                   radius1=pow(y[4]*y[4]+y[5]*y[5]+y[6]*y[6],0.5);
-				  if (radius1>1e-4) nrerror("\nRadius has exceeded Rmax=1e-4cm, so program has terminated.\nIf dissatisfied, please submit & file disatisfaction form #999,999.");
+				  if (radius1>1e-6) nrerror("\nRadius has exceeded Rmax=1e-4cm, so program has terminated.\nIf dissatisfied, please submit & file disatisfaction form #999,999.");
 				  Lz=y[4]*y[2]-y[5]*y[1];
 				  period=2*PI*( pow(m,0.5) )*( pow(semimajor,1.5) )/4.80298e-10;
 				  angfreq=2*PI/period;
@@ -1005,9 +1049,11 @@ theta0_old=0.0;
 				  
 				  aa=0.0;	bb=0.0;		cc=0.0;		dd=0.0;
 				  ee=0.0;	ff=0.0;		gg=0.0;		hh=0.0;
-				  ii=0.0;	jj=0.0;		kk=0.0;		ll=0.0;				  
+				  ii=0.0;	jj=0.0;		kk=0.0;		ll=0.0;
+                  
 				  if (count1>0)  
 				  {
+                      
 					  fprintf(ofp3,"%e, %e\n",x,semimajor);
 					  //fprintf(ofp4,"%e, %e\n",x,semiminor);
 					  fprintf(ofp5,"%e, %e\n",x,eccentricity);
@@ -1025,20 +1071,25 @@ theta0_old=0.0;
 					  radius_1=pow(y[4]*y[4]+y[5]*y[5]+y[6]*y[6],0.5);
 					  energy=-(e*e)/radius_1 + ( y[1]*y[1] + y[2]*y[2]  + y[3]*y[3] )/(2*m);
                       //fprintf(ofp8,"%.16e %.16e\n",x,energy);
-
 					  count1=0;
+                      counter ++;
+                      
 				  }
 				  count1++;
+                  
 				  j=-1;
 			  }
 
 			  j++;
-
+              
                    //I am experimenting below with CounterPrint for printing//
 			  if (count==CounterPrint)
 			  {
 				  //if ((x>6.7e-11) && (x<6.87e-11))
 				  fprintf(ofp2,"%.16e, %.16e, %.16e\n", x, y[4],y[5]);
+                  fprintf(ofp17, "%.16e, %.16e, %.16e, %.16e\n", forces_x_array[0],forces_x_array[1],forces_x_array[2],velocities_array[0]);
+                  fprintf(ofp18, "%.16e, %.16e, %.16e, %.16e\n", forces_y_array[0],forces_y_array[1],forces_y_array[2],velocities_array[1]);
+
 				  // if ((x>6.7e-11) && (x<6.87e-11))
 				      ////  radius_1=pow(y[4]*y[4]+y[5]*y[5]+y[6]*y[6],0.5);
 				  //  if ((x>6.7e-11) && (x<6.87e-11)) 

@@ -1,0 +1,16 @@
+all: cole_app
+
+cole_app: multi_elliptical_orbit_tracking_complicated_fit.o nr.o
+	c++ multi_elliptical_orbit_tracking_complicated_fit.o nr.o nrutil.o -o cole_app 
+
+multi_elliptical_orbit_tracking_complicated_fit.o: multi_elliptical_orbit_tracking_complicated_fit.cpp nr.h nrutil.h
+	c++ -c multi_elliptical_orbit_tracking_complicated_fit.cpp
+
+nr.o: nr.h 
+	c++ -c nr.h
+
+nrutil.o: nrutil.h
+	c++ -c nr.h
+
+clean:
+	rm -rf *o

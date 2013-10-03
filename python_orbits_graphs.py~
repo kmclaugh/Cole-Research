@@ -1,0 +1,333 @@
+#!/ad/eng/support/software/linux/all/x86_64/python32/bin/python3.2
+from math import *
+from pylab import *
+import datetime
+import os
+import sys
+sys.path.append('/home/kmclaugh/Desktop/Scripts')
+from textsender import textsender as textsender
+
+
+current_directory = os.getcwd()
+plots_directory = current_directory+"/Plots"
+animation_directory = plots_directory +"/Animations"
+current_data_directory = current_directory+"/Current_Data"
+
+## Convets a file with lines formated as "xvalue, yvalue\n" to a list of x_values and a list of y_values. Returns the tuple (x_values,y_values)
+def comma_seperated_file_to_xy_list(filename):
+    x_vals = []
+    y_vals = []
+    the_file = open(filename,"r")
+    for line in the_file:
+        split = line.split(",")
+        try:
+            x_value = float(split[0].replace(" ",""))
+            y_value = float(split[1].replace(" ",""))
+            x_vals.append(x_value)
+            y_vals.append(y_value)
+        except:
+            pass
+    return((x_vals,y_vals))
+
+## Converts a file with lines format as "value1, value2, value3..., valuen\n" to a plot with the formating particulars given in the function. Saves the plot in the /Plots directory as "PLOT_TITLE-CURRENT_TIME.pdf" to ensure graphs are not accidently overwritten. NOTE still does not work for more than two values.
+def comma_seperated_file_to_graph(filename,the_xlabel="x",the_ylabel="y",the_zlabel=None, the_title="title",marker=None,linestyle="-",color="b"):
+    current_date_and_time = datetime.datetime.now()
+    the_file = open(filename,"r")
+    for line in the_file:
+        split_values = line.split(",")
+        break
+    values = []
+    for one_values in split_values:
+        values.append([])
+    for line in the_file:
+        counter = 0
+        split_values = line.split(",")
+        for string_value in split_values:
+            float_value = float(string_value.replace(" ",""))
+            values[counter].append(float_value)
+            counter += 1
+    if len(values) == 2:
+        plot(values[0], values[1], marker=marker, linestyle=linestyle, color=color)
+        ylabel(the_ylabel)
+        xlabel(the_xlabel)
+        title(the_title)
+        todays_date = datetime.datetime.now()
+        show()
+        savefig(plots_directory+"/{}-{}.pdf".format(the_title,current_date_and_time), bbox_inches=0)
+    if len(values) == 3:
+        time_values = values[0]
+        x_vals = values[1]
+        y_vals = values[2]
+        plotx = []
+        ploty = []
+        counter = 500
+        for t in time_values:
+            plotx.append(x_vals[counter])
+            ploty.append(y_vals[counter])
+            counter += 1
+            if counter > 550:
+                break
+        plot(plotx,ploty,marker=marker, linestyle=linestyle, color=color)
+        show()
+        savefig(plots_directory+"/{}-{}.pdf".format(the_title,current_date_and_time), bbox_inches=0)
+
+def find_scale_factor(list_to_be_scaled,list_to_be_graphed):
+    scale1 = max(list_to_be_scaled)-min(list_to_be_scaled)
+    scale2 = max(list_to_be_graphed)-min(list_to_be_graphed)
+
+    scale_factor = (scale1*5)/scale2
+    return(scale_factor)
+
+def apply_scale_factor(list_to_be_scaled,scale_factor):
+    scaled_list = []
+    for i in list_to_be_scaled:
+        scaled_list.append((i/scale_factor))
+    return(scaled_list)
+
+def calculate_relsultant(x_vector,y_vectors):
+    magnitude = sqrt(x_vector**2+y_vectors**2)
+    return(magnitude)
+
+def scan_vector_values(vector_filename,start_index):
+    
+    vector_file = list(open(vector_filename,"r"))
+    vector_file = vector_file[start_index]
+    
+    columbic_values = []
+    radiation_values = []
+    applied_wave_values = []
+    velocity_values = []
+    
+    for line in vector_file:
+        split_values = line.split(",")
+        print(split_values)
+        if len(split_values) == 4:
+            ##columbic
+            double_string = split_values[0]
+            double_value = double(double_string.replace(" ",""))
+            columbic_values.append(double_value)
+            
+            ##radiation
+            double_string = split_values[1]
+            double_value = double(double_string.replace(" ",""))
+            radiation_values.append(double_value)
+            
+            ##applied wave
+            double_string = split_values[2]
+            double_value = double(double_string.replace(" ",""))
+            applied_wave_values.append(double_value)
+            
+            ##velocity
+            double_string = split_values[3]
+            double_value = double(double_string.replace(" ",""))
+            velocity_values.append(double_value)
+    return((columbic_values,radiation_values,applied_wave_values,velocity_values))
+
+def find_time_value(desired_time,time_list):
+    min_index = 0
+    max_index = int(len(time_list))
+    print(max_index)
+    current_index = int((max_index - min_index)/2+min_index)
+    condition = False
+    if time_list[min_index] >= desired_time:
+       current_index = min_index
+    else:
+        while condition == False:
+            print(current_index)
+            if time_list[current_index] >= desired_time and time_list[current_index-1] <= desired_time:
+                condition = True
+            else:
+                if time_list[current_index] > desired_time:
+                    max_index = current_index
+                    current_index = int((max_index-min_index)/2)+min_index
+                elif time_list[current_index] < desired_time:
+                    min_index = current_index
+                    current_index = int((max_index-min_index)/2)+min_index
+    return(current_index)
+
+def orbits_csv_to_animation(orbit_file_name,force_x_filename,force_y_filename):
+    orbit_file = open(orbit_file_name,"r")
+    
+    print("scanning position values")
+    position_x_values = []
+    position_y_values = []
+    time_values = []
+    for line in orbit_file:
+        split_values = line.split(",")
+        x_val = double(split_values[1].replace(" ",""))
+        position_x_values.append(x_val)
+        y_val = double(split_values[2].replace(" ",""))
+        position_y_values.append(y_val)
+        t_val = double(split_values[0].replace(" ",""))
+        time_values.append(t_val)
+       
+
+    print("finding requested time values")
+    counter = find_time_value(desired_time=6.4*10**-11,time_list=time_values)
+
+    print("scanning vector values")
+    ## x-values
+    vector_values = scan_vector_values(force_x_filename,counter)
+    columbic_x_values = vector_values[0]
+    radiation_x_values = vector_values[1]
+    applied_wave_x_values = vector_values[2]
+    velocity_x_values = vector_values[3]
+
+    ## y-values
+    vector_values = scan_vector_values(force_y_filename,counter)
+    columbic_y_values = vector_values[0]
+    radiation_y_values = vector_values[1]
+    applied_wave_y_values = vector_values[2]
+    velocity_y_values = vector_values[3]
+
+
+    position_x_values = position_x_values[counter:]
+    position_y_values = position_y_values[counter:]
+    time_values = time_values[counter:]
+
+    print("scaling vectors")
+    ## columbic
+    columbic_scale_factor = find_scale_factor(columbic_y_values,position_y_values)
+    columbic_scaled_list_y = apply_scale_factor(columbic_y_values,columbic_scale_factor)
+    columbic_scaled_list_x = apply_scale_factor(columbic_x_values,columbic_scale_factor)
+    ## radiation
+    radiation_scale_factor = find_scale_factor(radiation_y_values,position_y_values)
+    radiation_scaled_list_y = apply_scale_factor(radiation_y_values,radiation_scale_factor)
+    radiation_scaled_list_x = apply_scale_factor(radiation_x_values,radiation_scale_factor)
+    ## applied wave
+    applied_wave_scale_factor = find_scale_factor(applied_wave_y_values,position_y_values)
+    applied_wave_scaled_list_y = apply_scale_factor(applied_wave_y_values,applied_wave_scale_factor)
+    applied_wave_scaled_list_x = apply_scale_factor(applied_wave_x_values,applied_wave_scale_factor)
+    ## velocity
+    velocity_scale_factor = find_scale_factor(velocity_y_values,position_y_values)
+    velocity_scaled_list_y = apply_scale_factor(velocity_y_values,velocity_scale_factor)
+    velocity_scaled_list_x = apply_scale_factor(velocity_x_values,velocity_scale_factor)
+
+    ## axis factors
+    minx = min(position_x_values)
+    miny = min(position_y_values)
+    maxx = max(position_x_values)
+    maxy = max(position_y_values)
+    deltay = (maxy - miny)/12
+    deltax = (maxx - minx)/12
+
+    print("deleting old files")
+    for the_file in os.listdir(animation_directory):
+        file_path = os.path.join(animation_directory, the_file)
+        try:
+            os.unlink(file_path)
+        except Exception as e:
+            pass
+    
+    print("making animations files")
+    counter = 1
+    while counter <= len(time_values):
+        print('counter {}'.format(counter))
+        tracker = log10(counter)
+        print("line 219")
+        if tracker % 1 == 0:
+            print("creating file: {}".format(counter))
+        print("line 222")    
+        ## Values to be plotted for this frame
+        plotx = []
+        ploty = []
+        if counter < 4:
+            print("line 225")
+            ##get values for this frame
+            plotx += position_x_values[:counter]
+            ploty += position_y_values[:counter]
+            t = time_values[counter-1]
+            print("line 230")
+            ##create the time textbox
+#            txt1 = "Time: {} s".format(t)
+#            txt1 = txt1[:8]+txt1[17:]
+#            text(minx, maxy, txt1, fontsize=14,verticalalignment='top')
+            print("line 235")	
+            ##Define the axis
+            axis([minx-deltax,maxx+deltax, miny-deltay,maxy+deltay])
+            print("line 238")
+            ## Calculate Vector info
+            ##columbic vector
+            arrow(plotx[counter-1],ploty[counter-1],columbic_scaled_list_x[counter-1],columbic_scaled_list_y[counter-1],fc="w",ec="g",head_width=.1*deltay,head_length=.1*deltay, width=.005*deltay)
+            ##radiation vector
+            arrow(plotx[counter-1],ploty[counter-1],radiation_scaled_list_x[counter-1],radiation_scaled_list_y[counter-1],fc="w",ec="k",head_width=.1*deltay,head_length=.1*deltay, width=.005*deltay)
+            ##applied wave vector
+            arrow(plotx[counter-1],ploty[counter-1],applied_wave_scaled_list_x[counter-1],applied_wave_scaled_list_y[counter-1],fc="w",ec="m",head_width=.1*deltay,head_length=.1*deltay, width=.005*deltay)
+            ##velocity vector
+            arrow(plotx[counter-1],ploty[counter-1],velocity_scaled_list_x[counter-1],velocity_scaled_list_y[counter-1],fc="w",ec="r",head_width=.1*deltay,head_length=.1*deltay, width=.005*deltay)
+
+            print("line 249")         
+            ##Plot tail
+            plot(plotx,ploty,marker=None, linestyle="-", color="b")
+            ##Plot particle
+            plot(plotx[counter-1],ploty[counter-1],marker="o", linestyle="-", color="b")
+            print("line 254")           
+            ##Save figure
+            filename = animation_directory+("/orbit_animation_%010d.jpeg" % counter)
+            savefig(filename, bbox_inches=0)
+            clf()
+            print("line 259")     
+        else:
+            count_down = counter-4
+            for i in range(count_down,counter):
+                plotx.append(position_x_values[i])
+                ploty.append(position_y_values[i])
+            ##create the time textbox
+#            t = time_values[i]
+#            txt1 = "Time: {} s".format(t)
+#            txt1 = txt1[:8]+txt1[17:]
+#            text(minx, maxy, txt1, fontsize=14,verticalalignment='top')
+
+            ##Define the axis
+            axis([minx-deltax,maxx+deltax, miny-deltay,maxy+deltay])
+
+            ## Calculate Vector info
+            ##columbic vector
+            arrow(plotx[-1],ploty[-1],columbic_scaled_list_x[i],columbic_scaled_list_y[i],fc="w",ec="g",head_width=.1*deltay,head_length=.1*deltay, width=.005*deltay)
+            ##radiation vector
+            arrow(plotx[-1],ploty[-1],radiation_scaled_list_x[i],radiation_scaled_list_y[i],fc="w",ec="k",head_width=.1*deltay,head_length=.1*deltay, width=.005*deltay)
+            ##applied wave vector
+            arrow(plotx[-1],ploty[-1],applied_wave_scaled_list_x[i],applied_wave_scaled_list_y[i],fc="w",ec="m",head_width=.1*deltay,head_length=.1*deltay, width=.005*deltay)
+            ##velocity vector
+            arrow(plotx[-1],ploty[-1],velocity_scaled_list_x[i],velocity_scaled_list_y[i],fc="w",ec="r",head_width=.1*deltay,head_length=.1*deltay, width=.005*deltay)
+
+            axis([minx-deltax,maxx+deltax, miny-deltay,maxy+deltay])
+#            txt = "Time: {} s".format(t)
+#            txt = txt[:8]+txt[17:]
+#            text(minx, maxy, txt, fontsize=14,verticalalignment='top')
+            plot(plotx,ploty,marker=None, linestyle="-", color="b")
+            plot(plotx[-1],ploty[-1],marker="o", linestyle="-", color="b")
+            filename = animation_directory+("/orbit_animation_%010d.jpeg" % counter)
+            savefig(filename, bbox_inches=0)
+            clf()
+        counter += 1
+        if counter > 10:
+            break
+    textsender(8173126800,"Sir, animation generation is complete. There were {} files created".format(counter))
+    Jarvis_Voice("Sir, animation generation is complete")
+
+## Note that you must move the .dat files created by the multi_elliptical file to the /Current_Data directory after running multi_elliptical simulation. This is to prevent accencidental overwrite of .dat files as they take a long time to generate and the multi_elliptical will automatically overwrite previous files.
+
+## Eccentricity
+#eccentricity_filename = current_data_directory+"/eccen(n=2).dat"
+#comma_seperated_file_to_graph(eccentricity_filename,the_xlabel="x",the_ylabel="eccentricity",the_title="Eccentricity (N=5)")
+
+## Semimajor
+#semimajor_filename = current_data_directory+"/smajor(N=5).dat"
+#comma_seperated_file_to_graph(semimajor_filename,the_xlabel="x",the_ylabel="semimajor axis",the_title="Semimajor Axis(n=5)")
+
+## Theta0
+#theta0_filename = current_data_directory+"/theta0(n=5).dat"
+#comma_seperated_file_to_graph(theta0_filename,the_xlabel="x",the_ylabel="theta0",the_title="Theta0(n=5)")
+
+### Orbit
+orbit_filename = current_data_directory+"/orbit(n=2).dat"
+force_x_filename = current_data_directory+"/Forces_x(n=2).dat"
+force_y_filename = current_data_directory+"/Forces_y(n=2).dat"
+##comma_seperated_file_to_graph(orbit_filename,the_title="orbit")
+orbits_csv_to_animation(orbit_filename,force_x_filename,force_y_filename)
+
+
+
+
+
